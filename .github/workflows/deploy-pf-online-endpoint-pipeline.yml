@@ -42,7 +42,7 @@ jobs:
     - name: Display endpoint name
       run: echo "Endpoint name is:" ${{env.ENDPOINT_NAME}}
     - name: Setup endpoint
-      run:  echo "EP_OBJ_ID=$(az ml online-endpoint create --file promptflow/deployment/endpoint.yaml  --name ${{env.ENDPOINT_NAME}} -g ${{env.GROUP}} -w ${{env.WORKSPACE}} | jq -r '.[0].id')" >> "$GITHUB_ENV"
+      run:  echo "EP_OBJ_ID=$(az ml online-endpoint create --file promptflow/deployment/endpoint.yaml  --name ${{env.ENDPOINT_NAME}} -g ${{env.GROUP}} -w ${{env.WORKSPACE}} | jq -r '.identity.principal_id')" >> "$GITHUB_ENV"
     - name: Grant endpoint permission to workspace
       run: | 
         az role assignment create --assignee "${{ env.EP_OBJ_ID }}" --role "AzureML Data Scientist" --scope "/subscriptions/${{ env.SUBSCRIPTION }}/resourceGroups/${{env.GROUP}}/providers/Microsoft.MachineLearningServices/workspaces/${{ env.WORKSPACE }}"
