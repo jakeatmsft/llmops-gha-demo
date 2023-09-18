@@ -43,6 +43,10 @@ jobs:
       run: echo "Endpoint name is:" ${{env.ENDPOINT_NAME}}
     - name: Setup endpoint
       run: az ml online-endpoint create --file promptflow/deployment/endpoint.yaml  --name ${{env.ENDPOINT_NAME}} -g ${{env.GROUP}} -w ${{env.WORKSPACE}}
+    - name: Grant endpoint permission to workspace
+      run: |
+        obj_id=$(az ad sp list --all --filter "servicePrincipalType eq 'ManagedIdentity' and displayName eq '${{ env.WORKSPACE }}/onlineEndpoints/${{env.ENDPOINT_NAME}}'" | jq -r '.[0].id')
+        az role assignment create --assignee "$obj_id" --role "AzureML Data Scientist" --scope "/subscriptions/${{ env.SUBSCRIPTION }}/resourceGroups/${{env.GROUP}}/providers/Microsoft.MachineLearningServices/workspaces/${{ env.WORKSPACE }}"
     - name: Update deployment PRT_CONFIG variable
       run: |
         PRT_CONFIG_OVERRIDE=deployment.subscription_id=${{ env.SUBSCRIPTION }},deployment.resource_group=${{ env.GROUP }},deployment.workspace_name=${{ env.WORKSPACE }},deployment.endpoint_name=${{ env.ENDPOINT_NAME }},deployment.deployment_name=${{ env.DEPLOYMENT_NAME }}
