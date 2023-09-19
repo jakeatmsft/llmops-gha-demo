@@ -51,7 +51,7 @@ jobs:
         echo "MODEL_VERSION=$(az ml model list -w ${{ env.WORKSPACE }} -g ${{ env.GROUP }} -n web-classification-model | jq -r '.[0].version')" >>  "$GITHUB_ENV"
     - name: Update deployment PRT_CONFIG variable
       run: |
-        PRT_CONFIG_OVERRIDE=deployment.subscription_id=${{ env.SUBSCRIPTION }},deployment.resource_group=${{ env.GROUP }},deployment.workspace_name=${{ env.WORKSPACE }},deployment.endpoint_name=${{ env.ENDPOINT_NAME }},deployment.deployment_name=${{ env.DEPLOYMENT_NAME }}, deployment.model=azureml:web-classification-model:${{ env.MODEL_VERSION}}
+        PRT_CONFIG_OVERRIDE=deployment.subscription_id=${{ env.SUBSCRIPTION }},deployment.resource_group=${{ env.GROUP }},deployment.workspace_name=${{ env.WORKSPACE }},deployment.endpoint_name=${{ env.ENDPOINT_NAME }},deployment.deployment_name=${{ env.DEPLOYMENT_NAME }},deployment.model=azureml:web-classification-model:${{ env.MODEL_VERSION}}
         sed -i "s/PRT_CONFIG_OVERRIDE:.*/PRT_CONFIG_OVERRIDE: $PRT_CONFIG_OVERRIDE/g" promptflow/deployment/deployment.yaml
     - name: Setup deployment
       run: az ml online-deployment create --file promptflow/deployment/deployment.yaml --endpoint-name ${{env.ENDPOINT_NAME}} --all-traffic -g ${{env.GROUP}} -w ${{env.WORKSPACE}}
